@@ -17,7 +17,8 @@ let animationId = null;
 
 // ================= LOAD NODES =================
 async function loadNodes() {
-  const res = await fetch("http://localhost:8000/nodes");
+  const BASE_URL = "https://adsa-cp-ver2.onrender.com";
+  const res = await fetch(`${BASE_URL}/nodes`);
   const data = await res.json();
 
   nodesData = data;
@@ -52,9 +53,7 @@ async function findRoute() {
   const end = document.getElementById("end").value;
   const algo = document.getElementById("algo").value;
 
-  const res = await fetch(
-    `http://localhost:8000/route?start=${start}&end=${end}&algo=${algo}`
-  );
+  const res = await fetch(`${BASE_URL}/route?start=${start}&end=${end}&algo=${algo}`);
 
   const data = await res.json();
 
