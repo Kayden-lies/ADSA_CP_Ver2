@@ -6,6 +6,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // ================= GLOBAL =================
+const BASE_URL = "https://adsa-cp-ver2.onrender.com";
+
 let nodesData = {};
 let currentRoute = null;
 
@@ -17,12 +19,16 @@ let animationId = null;
 
 // ================= LOAD NODES =================
 async function loadNodes() {
-  const BASE_URL = "https://adsa-cp-ver2.onrender.com";
-  const res = await fetch(`${BASE_URL}/nodes`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/nodes`);
+    const data = await res.json();
 
-  nodesData = data;
-  populateDropdowns(data);
+    nodesData = data;
+    populateDropdowns(data);
+
+  } catch (err) {
+    console.error("Error loading nodes:", err);
+  }
 }
 
 
@@ -44,27 +50,35 @@ function populateDropdowns(nodes) {
 // ================= ROUTE FETCH =================
 async function findRoute() {
 
+  // STOP OLD ANIMATION
   if (animationId) {
     cancelAnimationFrame(animationId);
     animationId = null;
   }
 
-  const start = document.getElementById("start").value;
-  const end = document.getElementById("end").value;
-  const algo = document.getElementById("algo").value;
+  try {
+    const start = document.getElementById("start").value;
+    const end = document.getElementById("end").value;
+    const algo = document.getElementById("algo").value;
 
-  const res = await fetch(`${BASE_URL}/route?start=${start}&end=${end}&algo=${algo}`);
+    const res = await fetch(
+      `${BASE_URL}/route?start=${start}&end=${end}&algo=${algo}`
+    );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  handleRouteResponse(data, algo);
+    handleRouteResponse(data, algo);
+
+  } catch (err) {
+    console.error("Route fetch error:", err);
+  }
 }
 
 
 // ================= HANDLE RESPONSE =================
 function handleRouteResponse(data, algo) {
 
-  // CLEAN
+  // CLEAN EVERYTHING
   if (currentRoute) {
     map.removeLayer(currentRoute);
     currentRoute = null;
@@ -80,24 +94,24 @@ function handleRouteResponse(data, algo) {
     trailLine = null;
   }
 
-  // 🔥 ADD TERMINAL STEPS
+  // ================= TERMINAL =================
   if (data.steps) {
     updateTerminal(data.steps);
   }
 
-  // K-SHORTEST
+  // ================= K SHORTEST =================
   if (data.routes) {
     showKShortest(data.routes);
     return;
   }
 
-  // FLOYD
+  // ================= FLOYD =================
   if (data.matrix) {
-    alert("Floyd gives full distance matrix, not a single path");
+    alert("Floyd gives full distance matrix");
     return;
   }
 
-  // NORMAL PATH
+  // ================= NORMAL PATH =================
   const coords = data.coordinates.map(c => [c[0], c[1]]);
 
   map.fitBounds(coords);
@@ -142,7 +156,6 @@ function updateTerminal(steps) {
     const line = document.createElement("div");
     line.className = "code";
 
-    // optional colors
     if (s.type === "visit") line.style.color = "#22c55e";
     if (s.type === "relax") line.style.color = "#facc15";
     if (s.type === "update") line.style.color = "#38bdf8";
@@ -205,7 +218,7 @@ function createArrowIcon(angle = 0) {
         height: 0;
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
-        border-bottom: 18px solid #ff0000;
+        border-bottom: 18px solid red;
         transform: rotate(${angle}deg);
       "></div>
     `,
@@ -229,7 +242,7 @@ function animateArrow(coords) {
   if (!coords || coords.length < 2) return;
 
   trailLine = L.polyline([], {
-    color: "#ff0000",
+    color: "red",
     weight: 5
   }).addTo(map);
 
@@ -240,7 +253,7 @@ function animateArrow(coords) {
   let segmentIndex = 0;
   let t = 0;
 
-  const speed = 0.035;
+  const speed = 0.06; // 🔥 optimized speed
 
   function step() {
 
@@ -278,7 +291,8 @@ function animateArrow(coords) {
 
 
 // ================= BUTTON =================
-document.getElementById("findRoute").addEventListener("click", findRoute);
+document.getElementById("findRoute")
+  .addEventListener("click", findRoute);
 
 
 // ================= INIT =================
