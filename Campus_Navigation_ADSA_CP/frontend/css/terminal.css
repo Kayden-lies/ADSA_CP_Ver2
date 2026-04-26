@@ -1,0 +1,125 @@
+/* ================= TERMINAL CONTAINER ================= */
+.terminal-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+
+  pointer-events: auto;
+}
+
+/* ================= CARD ================= */
+.card {
+  width: 360px;
+  height: 180px;
+
+  background-color: #1e293b;
+  border-radius: 10px;
+
+  display: grid;
+  grid-template-rows: 40px 1fr;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+/* ================= HEADER ================= */
+.card .header {
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: #0f172a;
+}
+
+.card .header .title {
+  color: #7dd3fc;
+  font-size: 13px;
+  padding: 2px 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* subtle glow line */
+.card .header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    #7dd3fc,
+    transparent
+  );
+}
+
+/* ================= TERMINAL BODY ================= */
+.card .footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 8px;
+
+  background: #020617;
+
+  overflow-y: auto;
+  max-height: 140px;
+}
+
+/* ================= SCROLLBAR ================= */
+.card .footer::-webkit-scrollbar {
+  width: 4px;
+}
+
+.card .footer::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 2px;
+}
+
+/* ================= CODE LINE ================= */
+.card .footer .code {
+  display: flex;
+  align-items: center;
+
+  font-size: 11px;
+  line-height: 1.4;
+
+  font-family: "Courier New", monospace;
+}
+
+/* optional icon */
+.card .footer .code .icon {
+  color: #f472b6;
+  padding-top: 2px;
+}
+
+/* text */
+.card .footer .code .text {
+  padding-left: 4px;
+  color: #e2e8f0;
+}
+
+/* ================= OPTIONAL COLORS ================= */
+.code.visit .text {
+  color: #38bdf8; /* blue */
+}
+
+.code.relax .text {
+  color: #22c55e; /* green */
+}
+
+.code.update .text {
+  color: #facc15; /* yellow */
+}
+
+/* ================= EMPTY STATE ================= */
+.card .footer .placeholder {
+  color: #64748b;
+  font-size: 11px;
+  font-style: italic;
+}
